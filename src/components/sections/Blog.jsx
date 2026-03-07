@@ -7,6 +7,7 @@ import { blogs } from '../../data/portfolioData';
 import { fadeInUp, staggerContainer } from '../../data/animations';
 import SectionHeading from '../ui/SectionHeading';
 import GlassCard from '../ui/GlassCard';
+import ReadingGate, { useReadingGate } from '../ui/ReadingGate';
 
 // Lazy-load blog markdown — each file becomes a separate chunk
 const mdLoaders = import.meta.glob('../../data/blogs/*.md', { query: '?raw', import: 'default' });
@@ -560,6 +561,18 @@ export default function Blog() {
   const accentColors = ['#00C9A7', '#6C63FF', '#F5A623', '#3B82F6'];
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [selectedAccent, setSelectedAccent] = useState('#00C9A7');
+  const [showGate, setShowGate] = useState(false);
+  const { recordRead, unlock, isUnlocked } = useReadingGate();
+
+  const handleReadMore = (blog, index) => {
+    const allowed = recordRead(`blog:${blog.file}`);
+    if (allowed || isUnlocked()) {
+      setSelectedBlog(blog);
+      setSelectedAccent(accentColors[index % accentColors.length]);
+    } else {
+      setShowGate(true);
+    }
+  };
 
   return (
     <Box
@@ -588,10 +601,7 @@ export default function Blog() {
               <FlipCard
                 blog={blog}
                 index={index}
-                onReadMore={(b) => {
-                  setSelectedBlog(b);
-                  setSelectedAccent(accentColors[index % accentColors.length]);
-                }}
+                onReadMore={(b) => handleReadMore(b, index)}
               />
             </Grid>
           ))}
@@ -604,6 +614,13 @@ export default function Blog() {
         open={!!selectedBlog}
         onClose={() => setSelectedBlog(null)}
         accentColor={selectedAccent}
+      />
+
+      {/* Reading gate dialog */}
+      <ReadingGate
+        open={showGate}
+        onClose={() => setShowGate(false)}
+        onUnlock={unlock}
       />
     </Box>
   );

@@ -7,6 +7,7 @@ import { fadeInUp, scaleIn, staggerContainer } from '../../data/animations';
 import SectionHeading from '../ui/SectionHeading';
 import GlassCard from '../ui/GlassCard';
 import BookReader from '../ui/BookReader';
+import ReadingGate, { useReadingGate } from '../ui/ReadingGate';
 
 const MotionBox = motion.create(Box);
 const MotionGrid = motion.create(Grid);
@@ -177,6 +178,17 @@ function ArchitectureDiagram() {
 
 export default function SystemDesign() {
   const [selectedChapter, setSelectedChapter] = useState(null);
+  const [showGate, setShowGate] = useState(false);
+  const { recordRead, unlock, isUnlocked } = useReadingGate();
+
+  const handleOpenChapter = (chapter) => {
+    const allowed = recordRead(`sd:${chapter.id}`);
+    if (allowed || isUnlocked()) {
+      setSelectedChapter(chapter);
+    } else {
+      setShowGate(true);
+    }
+  };
 
   return (
     <Box
@@ -252,7 +264,7 @@ export default function SystemDesign() {
               <ChapterCard
                 chapter={chapter}
                 index={index}
-                onOpen={(ch) => setSelectedChapter(ch)}
+                onOpen={(ch) => handleOpenChapter(ch)}
               />
             </Grid>
           ))}
@@ -292,6 +304,13 @@ export default function SystemDesign() {
         chapter={selectedChapter}
         open={!!selectedChapter}
         onClose={() => setSelectedChapter(null)}
+      />
+
+      {/* Reading gate dialog */}
+      <ReadingGate
+        open={showGate}
+        onClose={() => setShowGate(false)}
+        onUnlock={unlock}
       />
     </Box>
   );
