@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>System Design Curriculum</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="A comprehensive system design curriculum with 62 deep, story-driven lessons for interview prep and real-world mastery.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/docsify-themeable@0/dist/css/theme-simple.css">
+  <style>
+    :root {
+      --base-font-size: 16px;
+      --theme-color: #3F51B5;
+      --sidebar-width: 280px;
+      --sidebar-nav-link-color--active: #3F51B5;
+      --sidebar-nav-link-font-weight--active: bold;
+      --content-max-width: 860px;
+      --code-font-size: 0.9em;
+      --blockquote-border-color: #3F51B5;
+    }
+    .markdown-section h1 {
+      border-bottom: 2px solid #3F51B5;
+      padding-bottom: 0.3em;
+    }
+    .markdown-section code {
+      background: #f5f5f5;
+      border-radius: 3px;
+      padding: 2px 6px;
+    }
+    .markdown-section pre>code {
+      padding: 1em;
+    }
+    .sidebar-nav li a {
+      font-size: 14px;
+    }
+    .app-nav {
+      position: fixed;
+      margin: 0;
+      padding: 10px 50px 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: 'System Design Curriculum',
+      repo: 'https://github.com/sonu-rathinfotech/system-design-curriculum',
+      loadSidebar: true,
+      subMaxLevel: 2,
+      search: {
+        placeholder: 'Search topics...',
+        noData: 'No results found',
+        depth: 3
+      },
+      auto2top: true,
+      coverpage: true,
+      themeColor: '#3F51B5',
+      pagination: {
+        previousText: 'Previous Topic',
+        nextText: 'Next Topic',
+        crossChapter: true,
+        crossChapterText: true
+      }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/docsify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify@4/lib/plugins/search.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docsify-pagination@2/dist/docsify-pagination.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-javascript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-sql.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1/components/prism-protobuf.min.js"></script>
+</body>
+</html>
