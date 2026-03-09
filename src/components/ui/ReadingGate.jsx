@@ -9,31 +9,33 @@ import GlassCard from './GlassCard';
 
 const MotionBox = motion.create(Box);
 
-const STORAGE_KEY = 'portfolio_reads';
+const COUNT_KEY = 'portfolio_page_count';
 const UNLOCK_KEY = 'portfolio_unlocked';
-const MAX_FREE_READS = 10;
+const MAX_FREE_PAGES = 10;
 const PASSWORD = 'sonu2025';
 
-/* ── Hook: tracks reads and gate state ── */
+/* ── Hook: tracks total pages read and gate state ── */
 export function useReadingGate() {
   const isUnlocked = () => localStorage.getItem(UNLOCK_KEY) === 'true';
 
-  const getReadCount = () => {
-    try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]').length; }
+  const getPageCount = () => {
+    try { return parseInt(localStorage.getItem(COUNT_KEY) || '0', 10); }
     catch { return 0; }
   };
 
-  const recordRead = useCallback((id) => {
+  // Check if user can read more pages
+  const canRead = useCallback(() => {
     if (isUnlocked()) return true;
-    try {
-      const reads = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
-      if (!reads.includes(id)) {
-        if (reads.length >= MAX_FREE_READS) return false; // blocked
-        reads.push(id);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(reads));
-      }
-      return true; // allowed (already read or under limit)
-    } catch { return true; }
+    return getPageCount() < MAX_FREE_PAGES;
+  }, []);
+
+  // Increment page counter (call each time a new page is viewed)
+  const recordPage = useCallback(() => {
+    if (isUnlocked()) return true;
+    const count = getPageCount();
+    if (count >= MAX_FREE_PAGES) return false;
+    localStorage.setItem(COUNT_KEY, String(count + 1));
+    return true;
   }, []);
 
   const unlock = useCallback((pwd) => {
@@ -44,7 +46,7 @@ export function useReadingGate() {
     return false;
   }, []);
 
-  return { recordRead, unlock, getReadCount, isUnlocked, maxReads: MAX_FREE_READS };
+  return { canRead, recordPage, unlock, isUnlocked, getPageCount, maxPages: MAX_FREE_PAGES };
 }
 
 /* ── Gate dialog ── */
@@ -120,7 +122,7 @@ export default function ReadingGate({ open, onClose, onUnlock }) {
           </Typography>
 
           <Typography variant="body2" color="text.secondary" sx={{ mb: 3, lineHeight: 1.7 }}>
-            You've read 10 articles for free. Enter the access password to unlock all content.
+            You've read 10 pages for free. Enter the access password to unlock all content.
           </Typography>
 
           {/* Password form */}

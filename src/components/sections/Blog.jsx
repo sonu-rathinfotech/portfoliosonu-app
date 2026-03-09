@@ -562,16 +562,16 @@ export default function Blog() {
   const [selectedBlog, setSelectedBlog] = useState(null);
   const [selectedAccent, setSelectedAccent] = useState('#00C9A7');
   const [showGate, setShowGate] = useState(false);
-  const { recordRead, unlock, isUnlocked } = useReadingGate();
+  const { recordPage, unlock, canRead } = useReadingGate();
 
   const handleReadMore = (blog, index) => {
-    const allowed = recordRead(`blog:${blog.file}`);
-    if (allowed || isUnlocked()) {
-      setSelectedBlog(blog);
-      setSelectedAccent(accentColors[index % accentColors.length]);
-    } else {
+    if (!canRead()) {
       setShowGate(true);
+      return;
     }
+    recordPage(); // opening a blog article = 1 page
+    setSelectedBlog(blog);
+    setSelectedAccent(accentColors[index % accentColors.length]);
   };
 
   return (

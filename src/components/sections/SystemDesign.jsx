@@ -179,15 +179,14 @@ function ArchitectureDiagram() {
 export default function SystemDesign() {
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [showGate, setShowGate] = useState(false);
-  const { recordRead, unlock, isUnlocked } = useReadingGate();
+  const { unlock, canRead } = useReadingGate();
 
   const handleOpenChapter = (chapter) => {
-    const allowed = recordRead(`sd:${chapter.id}`);
-    if (allowed || isUnlocked()) {
-      setSelectedChapter(chapter);
-    } else {
+    if (!canRead()) {
       setShowGate(true);
+      return;
     }
+    setSelectedChapter(chapter);
   };
 
   return (

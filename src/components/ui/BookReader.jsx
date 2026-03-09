@@ -10,6 +10,7 @@ import {
   FaTimes, FaChevronLeft, FaChevronRight,
   FaBookOpen, FaExpand, FaCompress, FaGithub,
 } from 'react-icons/fa';
+import ReadingGate, { useReadingGate } from './ReadingGate';
 
 // Lazy-import all system design .md files (loaded on demand, not bundled upfront)
 const sdModules = import.meta.glob('../../data/system-design/*.md', { query: '?raw', import: 'default' });
@@ -249,10 +250,12 @@ export default function BookReader({ chapter, open, onClose }) {
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(0);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showGate, setShowGate] = useState(false);
   const flipBookRef = useRef(null);
   const dialogRef = useRef(null);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const { recordPage, unlock, canRead } = useReadingGate();
 
   // Lazy-load chapter content from local bundled files
   useEffect(() => {
@@ -285,7 +288,17 @@ export default function BookReader({ chapter, open, onClose }) {
 
   const handleFlip = useCallback((e) => {
     setCurrentPage(e.data);
-  }, []);
+    // Each page flip forward counts as a page read
+    if (e.data > currentPage) {
+      if (!canRead()) {
+        setShowGate(true);
+        // Flip back to previous page
+        setTimeout(() => flipBookRef.current?.pageFlip()?.flipPrev(), 100);
+        return;
+      }
+      recordPage();
+    }
+  }, [currentPage, canRead, recordPage]);
 
   const goNext = () => {
     flipBookRef.current?.pageFlip()?.flipNext();
@@ -637,6 +650,13 @@ export default function BookReader({ chapter, open, onClose }) {
           </Box>
         )}
       </DialogContent>
+
+      {/* Reading gate */}
+      <ReadingGate
+        open={showGate}
+        onClose={() => setShowGate(false)}
+        onUnlock={unlock}
+      />
     </Dialog>
   );
 }
